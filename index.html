@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paper Repository</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: rgba(0,0,0,0.10);
+    --border2: rgba(0,0,0,0.18);
+    --text: #1a1a18;
+    --text2: #6b6b65;
+    --text3: #a0a09a;
+    --accent: #1a5c3a;
+    --accent-bg: #e8f4ed;
+    --accent-text: #1a5c3a;
+    --highlight: #f5d76e;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --danger: #c0392b;
+    --danger-bg: #fdf0ee;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16161a;
+      --surface: #1e1e24;
+      --surface2: #26262e;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.16);
+      --text: #e8e8e2;
+      --text2: #9b9b94;
+      --text3: #5a5a54;
+      --accent: #4ade80;
+      --accent-bg: #0d2b1a;
+      --accent-text: #4ade80;
+      --highlight: #92620a;
+      --danger: #e57373;
+      --danger-bg: #2c1616;
+    }
+  }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-mark {
+    width: 34px; height: 34px;
+    background: var(--accent-bg);
+    border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .logo-mark svg { width: 18px; height: 18px; color: var(--accent); }
+
+  .logo-name {
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+    color: var(--text);
+  }
+
+  .logo-sub {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 1px;
+  }
+
+  .header-right { display: flex; gap: 8px; align-items: center; }
+
+  /* ── Buttons ── */
+  .btn {
+    font-family: var(--sans);
+    font-size: 13px;
+    padding: 7px 16px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 400;
+    transition: all 0.12s;
+    border: 0.5px solid var(--border2);
+    background: transparent;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .btn:hover { background: var(--surface2); }
+
+  .btn-primary {
+    background: var(--accent-bg);
+    color: var(--accent-text);
+    border-color: transparent;
+    font-weight: 500;
+  }
+
+  .btn-primary:hover { opacity: 0.82; }
+
+  .btn-danger {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border-color: transparent;
+  }
+
+  .btn-sm { padding: 5px 12px; font-size: 12px; }
+
+  /* ── Layout ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 60px);
+  }
+
+  /* ── Sidebar ── */
+  sidebar {
+    background: var(--surface);
+    border-right: 0.5px solid var(--border);
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+
+  .sidebar-section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .stat-box {
+    background: var(--surface2);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+  }
+
+  .stat-num { font-size: 20px; font-weight: 500; color: var(--text); }
+  .stat-lbl { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+  .filter-group { display: flex; flex-direction: column; gap: 4px; }
+
+  .filter-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text2);
+    transition: all 0.1s;
+    border: none;
+    background: none;
+    font-family: var(--sans);
+    text-align: left;
+    width: 100%;
+  }
+
+  .filter-item:hover { background: var(--surface2); color: var(--text); }
+
+  .filter-item.active {
+    background: var(--accent-bg);
+    color: var(--accent-text);
+    font-weight: 500;
+  }
+
+  .filter-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
+
+  .filter-item.active .filter-dot { opacity: 1; }
+
+  .import-section { margin-top: auto; }
+
+  /* ── Main content ── */
+  .main-content { padding: 28px 32px; }
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text3);
+    pointer-events: none;
+    display: flex;
+  }
+
+  #searchInput {
+    width: 100%;
+    padding: 10px 12px 10px 38px;
+    font-size: 13px;
+    font-family: var(--sans);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  #searchInput:focus { border-color: var(--accent); }
+
+  .results-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .results-count {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  .sort-select {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 4px 8px;
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text2);
+    cursor: pointer;
+    outline: none;
+  }
+
+  /* ── Paper cards ── */
+  .paper-grid { display: flex; flex-direction: column; gap: 10px; }
+
+  .paper-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px 22px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .paper-card:hover { border-color: var(--border2); }
+
+  .card-top {
+    display: flex;
+    gap: 14px;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+  }
+
+  .paper-title {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .card-actions { display: flex; gap: 6px; flex-shrink: 0; margin-top: 1px; }
+
+  .icon-btn {
+    width: 30px; height: 30px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text2);
+    transition: all 0.12s;
+  }
+
+  .icon-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+  .icon-btn.dl:hover { background: var(--accent-bg); color: var(--accent-text); border-color: transparent; }
+  .icon-btn.del:hover { background: var(--danger-bg); color: var(--danger); border-color: transparent; }
+
+  .paper-authors {
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 6px;
+    line-height: 1.5;
+  }
+
+  .paper-abstract {
+    font-size: 12px;
+    color: var(--text3);
+    line-height: 1.65;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .paper-abstract.expanded {
+    display: block;
+  }
+
+  .abs-toggle {
+    font-size: 11px;
+    color: var(--accent-text);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--sans);
+    margin-left: 4px;
+    opacity: 0.8;
+  }
+
+  .abs-toggle:hover { opacity: 1; text-decoration: underline; }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 0.5px solid var(--border);
+  }
+
+  .pmid-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: var(--radius);
+    background: var(--surface2);
+    color: var(--text2);
+    border: 0.5px solid var(--border);
+  }
+
+  .meta-tag {
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  .journal-tag {
+    font-size: 11px;
+    color: var(--text2);
+    font-style: italic;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pdf-pill {
+    display: flex; align-items: center; gap: 4px;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 99px;
+    background: var(--accent-bg);
+    color: var(--accent-text);
+    margin-left: auto;
+  }
+
+  .no-pdf-pill {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    margin-left: auto;
+  }
+
+  mark { background: var(--highlight); border-radius: 2px; padding: 0 1px; color: var(--text); }
+
+  /* ── Empty / zero states ── */
+  .empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text3);
+  }
+
+  .empty svg { width: 40px; height: 40px; margin-bottom: 14px; opacity: 0.4; }
+  .empty h3 { font-size: 15px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
+  .empty p { font-size: 13px; max-width: 320px; margin: 0 auto; }
+
+  /* ── Modal ── */
+  .backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .backdrop.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--border2);
+    width: 560px;
+    max-width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 26px;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+  }
+
+  .modal-title { font-size: 16px; font-weight: 500; }
+
+  .close-btn {
+    width: 30px; height: 30px;
+    border: none; background: none; cursor: pointer;
+    color: var(--text2);
+    font-size: 20px;
+    border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.12s;
+  }
+
+  .close-btn:hover { background: var(--surface2); }
+
+  .fgroup { margin-bottom: 16px; }
+
+  .flabel {
+    display: block;
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 6px;
+    font-family: var(--mono);
+  }
+
+  .req { color: var(--danger); }
+
+  .finput, .ftextarea {
+    width: 100%;
+    font-family: var(--sans);
+    font-size: 13px;
+    padding: 9px 12px;
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius);
+    background: var(--surface2);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .finput:focus, .ftextarea:focus { border-color: var(--accent); }
+  .ftextarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+
+  .tag-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 7px 9px;
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius);
+    background: var(--surface2);
+    min-height: 40px;
+    align-items: center;
+    cursor: text;
+  }
+
+  .tag {
+    display: flex; align-items: center; gap: 4px;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 99px;
+    padding: 3px 10px;
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  .tag-x { cursor: pointer; color: var(--text3); font-size: 14px; line-height: 1; }
+  .tag-x:hover { color: var(--text); }
+
+  #tagInput {
+    border: none; background: transparent;
+    font-family: var(--sans); font-size: 13px;
+    color: var(--text); outline: none;
+    min-width: 120px; flex: 1;
+  }
+
+  .file-drop {
+    border: 1px dashed var(--border2);
+    border-radius: var(--radius);
+    padding: 22px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+
+  .file-drop:hover, .file-drop.drag-over {
+    background: var(--accent-bg);
+    border-color: var(--accent);
+  }
+
+  .drop-icon { color: var(--text3); margin-bottom: 8px; }
+  .drop-label { font-size: 13px; color: var(--text2); }
+  .drop-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+  .drop-file { font-family: var(--mono); font-size: 11px; color: var(--accent-text); margin-top: 6px; }
+
+  .ferr { font-size: 11px; color: var(--danger); margin-top: 4px; }
+  .fnote { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 0.5px solid var(--border);
+  }
+
+  .row2 { display: grid; grid-template-columns: 1fr 100px; gap: 12px; }
+
+  /* ── Export/Import ── */
+  .export-box {
+    background: var(--surface2);
+    border-radius: var(--radius);
+    padding: 14px;
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  .export-box strong { color: var(--text); font-weight: 500; }
+
+  /* ── Responsive ── */
+  @media (max-width: 700px) {
+    .layout { grid-template-columns: 1fr; }
+    sidebar { display: none; }
+    .main-content { padding: 16px; }
+    header { padding: 0 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-name">Paper Repository</div>
+      <div class="logo-sub" id="hdr-count">0 papers</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-sm" onclick="openImport()">Import JSON</button>
+    <button class="btn btn-sm" onclick="exportData()">Export JSON</button>
+    <button class="btn btn-sm" id="publishBtn" onclick="openPublish()" style="display:none">
+      <span id="publishBtnLabel">Publish to GitHub</span>
+    </button>
+    <button class="btn btn-sm" onclick="openGhSettings()" title="GitHub settings" style="padding:7px 10px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    </button>
+    <button class="btn btn-sm" onclick="openBulk()" style="background:var(--accent-bg);color:var(--accent-text);border-color:transparent;font-weight:500">⬆ Bulk upload PDFs</button>
+    <button class="btn btn-primary" onclick="openAdd()">+ Add paper</button>
+  </div>
+</header>
+
+<div class="layout">
+  <sidebar>
+    <div>
+      <div class="sidebar-section-label">Overview</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num" id="s-total">0</div><div class="stat-lbl">papers</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-pdf">0</div><div class="stat-lbl">with pdf</div></div>
+        <div class="stat-box" style="grid-column:1/-1"><div class="stat-num" id="s-authors">0</div><div class="stat-lbl">unique authors</div></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sidebar-section-label">Search by</div>
+      <div class="filter-group">
+        <button class="filter-item active" data-f="all" onclick="setFilter('all',this)"><span class="filter-dot"></span>All fields</button>
+        <button class="filter-item" data-f="pmid" onclick="setFilter('pmid',this)"><span class="filter-dot"></span>PMID</button>
+        <button class="filter-item" data-f="author" onclick="setFilter('author',this)"><span class="filter-dot"></span>Authors</button>
+        <button class="filter-item" data-f="title" onclick="setFilter('title',this)"><span class="filter-dot"></span>Title</button>
+        <button class="filter-item" data-f="abstract" onclick="setFilter('abstract',this)"><span class="filter-dot"></span>Abstract</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="sidebar-section-label">Show only</div>
+      <div class="filter-group">
+        <button class="filter-item" data-f="haspdf" onclick="setFilter('haspdf',this)"><span class="filter-dot"></span>Has PDF</button>
+        <button class="filter-item" data-f="nopdf" onclick="setFilter('nopdf',this)"><span class="filter-dot"></span>Missing PDF</button>
+      </div>
+    </div>
+
+    <div class="import-section">
+      <div class="sidebar-section-label">Publish</div>
+      <div class="export-box">
+        <strong>GitHub auto-publish:</strong> click the gear icon in the header to connect your GitHub repo. After that, one click on <em>Publish to GitHub</em> updates the live site instantly.
+      </div>
+    </div>
+  </sidebar>
+
+  <div class="main-content">
+    <div class="search-bar">
+      <div class="search-wrap">
+        <span class="search-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
+        <input id="searchInput" type="text" placeholder="Search by PMID, author, title, or abstract…" oninput="doSearch()" />
+      </div>
+    </div>
+
+    <div class="results-meta">
+      <span class="results-count" id="res-count">0 results</span>
+      <select class="sort-select" id="sortSel" onchange="render()">
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+        <option value="title">Title A–Z</option>
+        <option value="year">Year desc</option>
+      </select>
+    </div>
+
+    <div class="paper-grid" id="paperGrid"></div>
+  </div>
+</div>
+
+<!-- Add / Edit Modal -->
+<div class="backdrop" id="addModal" onclick="backdropClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Add paper</div>
+      <button class="close-btn" onclick="closeAdd()">×</button>
+    </div>
+
+    <div class="fgroup">
+      <label class="flabel">PMID <span class="req">*</span></label>
+      <input class="finput" id="f-pmid" type="text" placeholder="e.g. 38291234" oninput="onPmid()" />
+      <div class="fnote" id="pmid-note">Enter a PubMed ID to auto-fill metadata.</div>
+      <div class="ferr" id="e-pmid"></div>
+    </div>
+
+    <div class="fgroup">
+      <label class="flabel">Title <span class="req">*</span></label>
+      <input class="finput" id="f-title" type="text" placeholder="Full paper title" />
+      <div class="ferr" id="e-title"></div>
+    </div>
+
+    <div class="fgroup">
+      <label class="flabel">Authors <span class="req">*</span> <span style="font-weight:400;opacity:0.7">— press Enter after each name</span></label>
+      <div class="tag-wrap" id="tagWrap" onclick="document.getElementById('tagInput').focus()">
+        <input id="tagInput" placeholder="Last FM, …" onkeydown="tagKey(event)" />
+      </div>
+      <div class="ferr" id="e-authors"></div>
+    </div>
+
+    <div class="row2">
+      <div class="fgroup">
+        <label class="flabel">Journal</label>
+        <input class="finput" id="f-journal" type="text" />
+      </div>
+      <div class="fgroup">
+        <label class="flabel">Year</label>
+        <input class="finput" id="f-year" type="text" placeholder="2024" />
+      </div>
+    </div>
+
+    <div class="fgroup">
+      <label class="flabel">Abstract</label>
+      <textarea class="ftextarea" id="f-abstract" placeholder="Paste abstract…"></textarea>
+    </div>
+
+    <div class="fgroup">
+      <label class="flabel">PDF file <span style="font-weight:400;opacity:0.7">— stored in-browser; export JSON to deploy</span></label>
+      <div class="file-drop" id="fileDrop" onclick="document.getElementById('pdfFile').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropped(event)">
+        <div class="drop-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <div class="drop-label">Click or drag PDF here</div>
+        <div class="drop-sub">Filename by PMID recommended (e.g. 38291234.pdf)</div>
+        <div class="drop-file" id="fileLabel"></div>
+      </div>
+      <input type="file" id="pdfFile" accept=".pdf" style="display:none" onchange="fileChosen(event)" />
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn" onclick="closeAdd()">Cancel</button>
+      <button class="btn btn-primary" onclick="savePaper()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Import Modal -->
+<div class="backdrop" id="importModal" onclick="if(event.target===this)closeImport()">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header">
+      <div class="modal-title">Import JSON</div>
+      <button class="close-btn" onclick="closeImport()">×</button>
+    </div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px">Select a <code>papers.json</code> file exported from this app. Existing papers with the same PMID will be updated; new ones will be added.</p>
+    <div class="file-drop" onclick="document.getElementById('jsonFile').click()" style="padding:16px">
+      <div class="drop-label">Click to select papers.json</div>
+      <div class="drop-file" id="jsonLabel"></div>
+    </div>
+    <input type="file" id="jsonFile" accept=".json" style="display:none" onchange="jsonChosen(event)" />
+    <div class="modal-footer">
+      <button class="btn" onclick="closeImport()">Cancel</button>
+      <button class="btn btn-primary" id="doImportBtn" onclick="doImport()" disabled>Import</button>
+    </div>
+  </div>
+</div>
+
+<!-- GitHub Settings Modal -->
+<div class="backdrop" id="ghSettingsModal" onclick="if(event.target===this)closeGhSettings()">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title">GitHub settings</div>
+      <button class="close-btn" onclick="closeGhSettings()">×</button>
+    </div>
+
+    <p style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6">
+      Connect your GitHub repo so you can publish updates with one click. Your token is stored only in your browser's localStorage and never sent anywhere except GitHub's API.
+    </p>
+
+    <div class="fgroup">
+      <label class="flabel">GitHub username <span class="req">*</span></label>
+      <input class="finput" id="gh-user" type="text" placeholder="e.g. luciano" />
+    </div>
+
+    <div class="fgroup">
+      <label class="flabel">Repository name <span class="req">*</span></label>
+      <input class="finput" id="gh-repo" type="text" placeholder="e.g. paper-repository" />
+    </div>
+
+    <div class="fgroup">
+      <label class="flabel">File path in repo</label>
+      <input class="finput" id="gh-path" type="text" placeholder="index.html" />
+      <div class="fnote">Leave as <code>index.html</code> for GitHub Pages root.</div>
+    </div>
+
+    <div class="fgroup">
+      <label class="flabel">Personal Access Token <span class="req">*</span></label>
+      <input class="finput" id="gh-token" type="password" placeholder="ghp_xxxxxxxxxxxx" />
+      <div class="fnote">
+        Create one at <strong>github.com → Settings → Developer settings → Personal access tokens → Fine-grained tokens</strong>.
+        Grant it <strong>Contents: Read and write</strong> on your repo only. No other permissions needed.
+      </div>
+    </div>
+
+    <div class="ferr" id="gh-err" style="margin-top:4px"></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" onclick="clearGhSettings()" style="margin-right:auto">Clear saved settings</button>
+      <button class="btn" onclick="closeGhSettings()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveGhSettings()">Save &amp; connect</button>
+    </div>
+  </div>
+</div>
+
+<!-- Publish Modal -->
+<div class="backdrop" id="publishModal" onclick="if(event.target===this)closePublish()">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <div class="modal-title">Publish to GitHub</div>
+      <button class="close-btn" onclick="closePublish()">×</button>
+    </div>
+
+    <div id="publishBody">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">
+        This will push the current state of the repository (<strong id="pub-count">0 papers</strong>) to:
+      </p>
+      <div style="background:var(--surface2);border-radius:var(--radius);padding:12px 14px;font-family:var(--mono);font-size:12px;color:var(--text2);margin-bottom:16px;word-break:break-all" id="pub-target"></div>
+      <p style="font-size:12px;color:var(--text3);line-height:1.6">
+        The file will be replaced with the updated version. GitHub Pages usually reflects changes within 1–2 minutes.
+      </p>
+    </div>
+
+    <div id="publishProgress" style="display:none;text-align:center;padding:20px 0">
+      <div style="font-size:13px;color:var(--text2)" id="publishStatus">Preparing…</div>
+    </div>
+
+    <div class="modal-footer" id="publishFooter">
+      <button class="btn" onclick="closePublish()">Cancel</button>
+      <button class="btn btn-primary" onclick="doPublish()">Publish now</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Upload Modal -->
+<div class="backdrop" id="bulkModal" onclick="if(event.target===this)closeBulk()">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <div class="modal-title">Bulk upload PDFs</div>
+      <button class="close-btn" onclick="closeBulk()">×</button>
+    </div>
+
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">
+      Select multiple PDF files named by PMID (e.g. <code>38291234.pdf</code>). The app will automatically fetch title, authors, journal and abstract from PubMed for each one.
+    </p>
+
+    <div id="bulkDropArea" class="file-drop" style="margin-bottom:16px"
+      onclick="document.getElementById('bulkFileInput').click()"
+      ondragover="bulkDragOver(event)" ondragleave="bulkDragLeave(event)" ondrop="bulkDropped(event)">
+      <div class="drop-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <div class="drop-label">Click or drag multiple PDF files here</div>
+      <div class="drop-sub">Files must be named by PMID, e.g. <code>38291234.pdf</code></div>
+    </div>
+    <input type="file" id="bulkFileInput" accept=".pdf" multiple style="display:none" onchange="bulkFilesChosen(event)" />
+
+    <div id="bulkQueue" style="display:none">
+      <div style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:8px" id="bulkQueueLabel"></div>
+      <div style="max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:6px" id="bulkList"></div>
+    </div>
+
+    <div class="modal-footer" id="bulkFooter">
+      <button class="btn" onclick="closeBulk()">Cancel</button>
+      <button class="btn btn-primary" id="bulkStartBtn" onclick="startBulkImport()" disabled>Import all</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── State ── */
+let papers = [];
+let currentFilter = 'all';
+let searchQ = '';
+let authorTags = [];
+let selectedFile = null;
+let editingId = null;
+let importBuffer = null;
+let pmidTimer = null;
+
+const STORE = 'paperRepo_v3';
+
+/* ── Persistence ── */
+function load() {
+  try { const d = localStorage.getItem(STORE); if (d) papers = JSON.parse(d); } catch(e) {}
+  render();
+}
+
+function save() {
+  try { localStorage.setItem(STORE, JSON.stringify(papers)); } catch(e) {}
+}
+
+/* ── Export / Import ── */
+function exportData() {
+  const blob = new Blob([JSON.stringify(papers, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'papers.json';
+  a.click();
+}
+
+function openImport() { document.getElementById('importModal').classList.add('open'); }
+function closeImport() { document.getElementById('importModal').classList.remove('open'); importBuffer = null; document.getElementById('jsonLabel').textContent=''; document.getElementById('doImportBtn').disabled=true; }
+
+function jsonChosen(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  document.getElementById('jsonLabel').textContent = file.name;
+  const r = new FileReader();
+  r.onload = ev => {
+    try {
+      importBuffer = JSON.parse(ev.target.result);
+      document.getElementById('doImportBtn').disabled = false;
+    } catch(err) { alert('Invalid JSON file.'); }
+  };
+  r.readAsText(file);
+}
+
+function doImport() {
+  if (!importBuffer) return;
+  let added = 0, updated = 0;
+  importBuffer.forEach(p => {
+    const idx = papers.findIndex(x => x.pmid === p.pmid);
+    if (idx > -1) { papers[idx] = p; updated++; }
+    else { papers.push(p); added++; }
+  });
+  save(); render(); closeImport();
+  alert(`Done. ${added} added, ${updated} updated.`);
+}
+
+/* ── Search / filter ── */
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-item').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+function doSearch() {
+  searchQ = document.getElementById('searchInput').value.trim().toLowerCase();
+  render();
+}
+
+function filtered() {
+  let list = papers;
+  if (currentFilter === 'haspdf') return list.filter(p => p.hasPdf);
+  if (currentFilter === 'nopdf') return list.filter(p => !p.hasPdf);
+  if (!searchQ) return list;
+  return list.filter(p => {
+    const q = searchQ;
+    if (currentFilter === 'pmid') return String(p.pmid).includes(q);
+    if (currentFilter === 'author') return (p.authors||[]).some(a=>a.toLowerCase().includes(q));
+    if (currentFilter === 'title') return (p.title||'').toLowerCase().includes(q);
+    if (currentFilter === 'abstract') return (p.abstract||'').toLowerCase().includes(q);
+    return String(p.pmid).includes(q) ||
+      (p.authors||[]).some(a=>a.toLowerCase().includes(q)) ||
+      (p.title||'').toLowerCase().includes(q) ||
+      (p.abstract||'').toLowerCase().includes(q);
+  });
+}
+
+function sorted(list) {
+  const s = document.getElementById('sortSel').value;
+  return [...list].sort((a,b) => {
+    if (s==='newest') return (b.addedAt||0)-(a.addedAt||0);
+    if (s==='oldest') return (a.addedAt||0)-(b.addedAt||0);
+    if (s==='title') return (a.title||'').localeCompare(b.title||'');
+    if (s==='year') return parseInt(b.year||0)-parseInt(a.year||0);
+    return 0;
+  });
+}
+
+/* ── Render ── */
+function hl(text, q) {
+  if (!q || !text) return text||'';
+  const esc = q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return String(text).replace(new RegExp(`(${esc})`,'gi'),'<mark>$1</mark>');
+}
+
+function updateStats() {
+  document.getElementById('s-total').textContent = papers.length;
+  document.getElementById('s-pdf').textContent = papers.filter(p=>p.hasPdf).length;
+  const au = new Set();
+  papers.forEach(p=>(p.authors||[]).forEach(a=>au.add(a.toLowerCase().trim())));
+  document.getElementById('s-authors').textContent = au.size;
+  document.getElementById('hdr-count').textContent = `${papers.length} paper${papers.length!==1?'s':''}`;
+}
+
+function render() {
+  updateStats();
+  const list = sorted(filtered());
+  const q = searchQ;
+  const grid = document.getElementById('paperGrid');
+  document.getElementById('res-count').textContent = `${list.length} result${list.length!==1?'s':''}`;
+
+  if (!papers.length) {
+    grid.innerHTML = `<div class="empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      <h3>No papers yet</h3>
+      <p>Click "+ Add paper" to start building your repository, or import a papers.json file.</p>
+    </div>`;
+    return;
+  }
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty"><h3>No results</h3><p>Try a different search term or filter.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(p => {
+    const authStr = (p.authors||[]).join(', ');
+    const abs = p.abstract || '';
+    const absShort = abs.length > 220 ? abs.slice(0,220)+'…' : abs;
+    return `<div class="paper-card">
+      <div class="card-top">
+        <div class="paper-title">${hl(p.title,q)}</div>
+        <div class="card-actions">
+          ${p.hasPdf ? `<button class="icon-btn dl" title="Download PDF" onclick="dlPdf('${p.id}')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </button>` : ''}
+          <button class="icon-btn" title="Edit" onclick="editPaper('${p.id}')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="icon-btn del" title="Delete" onclick="delPaper('${p.id}')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>
+      ${authStr ? `<div class="paper-authors">${hl(authStr,q)}</div>` : ''}
+      ${abs ? `<div>
+        <span class="paper-abstract" id="ab-${p.id}">${hl(absShort,q)}</span>
+        ${abs.length > 220 ? `<button class="abs-toggle" onclick="toggleAbs('${p.id}',this)" data-full="${encodeURIComponent(abs)}" data-q="${encodeURIComponent(q)}">more</button>` : ''}
+      </div>` : ''}
+      <div class="card-footer">
+        <span class="pmid-tag">${hl(String(p.pmid),q)}</span>
+        ${p.year ? `<span class="meta-tag">${p.year}</span>` : ''}
+        ${p.journal ? `<span class="journal-tag">${p.journal}</span>` : ''}
+        ${p.hasPdf
+          ? `<span class="pdf-pill"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>PDF</span>`
+          : `<span class="no-pdf-pill" style="margin-left:auto">no pdf</span>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleAbs(id, btn) {
+  const el = document.getElementById('ab-'+id);
+  const full = decodeURIComponent(btn.dataset.full);
+  const q = decodeURIComponent(btn.dataset.q);
+  if (el.classList.contains('expanded')) {
+    el.innerHTML = hl(full.slice(0,220)+'…', q);
+    el.classList.remove('expanded');
+    btn.textContent = 'more';
+  } else {
+    el.innerHTML = hl(full, q);
+    el.classList.add('expanded');
+    btn.textContent = 'less';
+  }
+}
+
+function dlPdf(id) {
+  const p = papers.find(x=>x.id===id);
+  if (!p||!p.pdfData) return;
+  const a = document.createElement('a');
+  a.href = p.pdfData;
+  a.download = `${p.pmid}.pdf`;
+  a.click();
+}
+
+function delPaper(id) {
+  if (!confirm('Delete this paper from the repository?')) return;
+  papers = papers.filter(p=>p.id!==id);
+  save(); render();
+}
+
+/* ── Add / Edit ── */
+function openAdd() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'Add paper';
+  clearForm();
+  document.getElementById('addModal').classList.add('open');
+}
+
+function editPaper(id) {
+  const p = papers.find(x=>x.id===id);
+  if (!p) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = 'Edit paper';
+  document.getElementById('f-pmid').value = p.pmid;
+  document.getElementById('f-title').value = p.title;
+  document.getElementById('f-journal').value = p.journal||'';
+  document.getElementById('f-year').value = p.year||'';
+  document.getElementById('f-abstract').value = p.abstract||'';
+  authorTags = [...(p.authors||[])];
+  renderTags();
+  selectedFile = null;
+  document.getElementById('fileLabel').textContent = p.hasPdf ? `Current: ${p.pmid}.pdf` : '';
+  ['e-pmid','e-title','e-authors'].forEach(id=>document.getElementById(id).textContent='');
+  document.getElementById('pmid-note').textContent = '';
+  document.getElementById('addModal').classList.add('open');
+}
+
+function clearForm() {
+  ['f-pmid','f-title','f-journal','f-year','f-abstract'].forEach(id=>document.getElementById(id).value='');
+  ['e-pmid','e-title','e-authors'].forEach(id=>document.getElementById(id).textContent='');
+  authorTags = []; renderTags();
+  selectedFile = null;
+  document.getElementById('fileLabel').textContent = '';
+  document.getElementById('pmid-note').textContent = 'Enter a PubMed ID to auto-fill metadata.';
+}
+
+function closeAdd() { document.getElementById('addModal').classList.remove('open'); }
+function backdropClick(e) { if (e.target===document.getElementById('addModal')) closeAdd(); }
+
+/* ── Tags ── */
+function tagKey(e) {
+  if (e.key==='Enter'||e.key===',') {
+    e.preventDefault();
+    const v = e.target.value.trim().replace(/,$/,'');
+    if (v) { authorTags.push(v); e.target.value=''; renderTags(); }
+  } else if (e.key==='Backspace'&&!e.target.value&&authorTags.length) {
+    authorTags.pop(); renderTags();
+  }
+}
+
+function removeTag(i) { authorTags.splice(i,1); renderTags(); }
+
+function renderTags() {
+  const wrap = document.getElementById('tagWrap');
+  const inp = document.getElementById('tagInput');
+  wrap.innerHTML = '';
+  authorTags.forEach((a,i) => {
+    const span = document.createElement('span');
+    span.className = 'tag';
+    span.innerHTML = `${a} <span class="tag-x" onclick="removeTag(${i})">×</span>`;
+    wrap.appendChild(span);
+  });
+  wrap.appendChild(inp);
+}
+
+/* ── File ── */
+function fileChosen(e) {
+  const f = e.target.files[0];
+  if (f) { selectedFile = f; document.getElementById('fileLabel').textContent = f.name; }
+}
+function dragOver(e) { e.preventDefault(); document.getElementById('fileDrop').classList.add('drag-over'); }
+function dragLeave() { document.getElementById('fileDrop').classList.remove('drag-over'); }
+function dropped(e) {
+  e.preventDefault();
+  document.getElementById('fileDrop').classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f&&f.type==='application/pdf') { selectedFile = f; document.getElementById('fileLabel').textContent = f.name; }
+}
+
+/* ── PubMed auto-fill ── */
+function onPmid() {
+  clearTimeout(pmidTimer);
+  const pmid = document.getElementById('f-pmid').value.trim();
+  if (!/^\d{6,}$/.test(pmid)) return;
+  document.getElementById('pmid-note').textContent = 'Looking up PubMed…';
+  pmidTimer = setTimeout(()=>fetchPubMed(pmid), 700);
+}
+
+async function fetchPubMed(pmid) {
+  try {
+    const res = await fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${pmid}&retmode=json`);
+    const data = await res.json();
+    const r = data.result&&data.result[pmid];
+    if (!r||r.error) { document.getElementById('pmid-note').textContent = 'Not found in PubMed.'; return; }
+    if (!document.getElementById('f-title').value) document.getElementById('f-title').value = r.title||'';
+    if (!document.getElementById('f-journal').value) document.getElementById('f-journal').value = r.source||'';
+    if (!document.getElementById('f-year').value&&r.pubdate) document.getElementById('f-year').value = r.pubdate.split(' ')[0];
+    if (!authorTags.length&&r.authors) { authorTags = r.authors.slice(0,30).map(a=>a.name).filter(Boolean); renderTags(); }
+    document.getElementById('pmid-note').textContent = 'Metadata loaded from PubMed.';
+  } catch(e) { document.getElementById('pmid-note').textContent = 'Could not reach PubMed.'; }
+}
+
+/* ── Save ── */
+async function savePaper() {
+  const pmid = document.getElementById('f-pmid').value.trim();
+  const title = document.getElementById('f-title').value.trim();
+  let ok = true;
+  ['e-pmid','e-title','e-authors'].forEach(id=>document.getElementById(id).textContent='');
+
+  if (!pmid) { document.getElementById('e-pmid').textContent='Required.'; ok=false; }
+  else if (!/^\d+$/.test(pmid)) { document.getElementById('e-pmid').textContent='Must be a number.'; ok=false; }
+  if (!title) { document.getElementById('e-title').textContent='Required.'; ok=false; }
+
+  const pending = document.getElementById('tagInput').value.trim();
+  if (pending) authorTags.push(pending);
+  if (!ok) return;
+
+  let pdfData = null;
+  if (selectedFile) {
+    pdfData = await new Promise(res => {
+      const r = new FileReader();
+      r.onload = ()=>res(r.result);
+      r.readAsDataURL(selectedFile);
+    });
+  }
+
+  if (editingId) {
+    const i = papers.findIndex(p=>p.id===editingId);
+    if (i>-1) {
+      papers[i] = { ...papers[i], pmid, title, authors:authorTags,
+        journal:document.getElementById('f-journal').value.trim(),
+        year:document.getElementById('f-year').value.trim(),
+        abstract:document.getElementById('f-abstract').value.trim(),
+        hasPdf: pdfData?true:papers[i].hasPdf,
+        pdfData: pdfData||papers[i].pdfData };
+    }
+  } else {
+    if (papers.find(p=>p.pmid===pmid)) { document.getElementById('e-pmid').textContent='PMID already exists.'; return; }
+    papers.push({
+      id: Date.now().toString(36)+Math.random().toString(36).slice(2),
+      pmid, title, authors:authorTags,
+      journal:document.getElementById('f-journal').value.trim(),
+      year:document.getElementById('f-year').value.trim(),
+      abstract:document.getElementById('f-abstract').value.trim(),
+      hasPdf:!!pdfData, pdfData, addedAt:Date.now()
+    });
+  }
+  save(); closeAdd(); render();
+}
+
+/* ── GitHub settings ── */
+const GH_STORE = 'paperRepo_gh';
+
+function loadGhSettings() {
+  try { return JSON.parse(localStorage.getItem(GH_STORE)) || {}; } catch(e) { return {}; }
+}
+
+function isGhConfigured() {
+  const s = loadGhSettings();
+  return !!(s.user && s.repo && s.token);
+}
+
+function updatePublishBtn() {
+  const btn = document.getElementById('publishBtn');
+  btn.style.display = isGhConfigured() ? '' : 'none';
+}
+
+function openGhSettings() {
+  const s = loadGhSettings();
+  document.getElementById('gh-user').value = s.user || '';
+  document.getElementById('gh-repo').value = s.repo || '';
+  document.getElementById('gh-path').value = s.path || 'index.html';
+  document.getElementById('gh-token').value = s.token || '';
+  document.getElementById('gh-err').textContent = '';
+  document.getElementById('ghSettingsModal').classList.add('open');
+}
+
+function closeGhSettings() { document.getElementById('ghSettingsModal').classList.remove('open'); }
+
+function saveGhSettings() {
+  const user = document.getElementById('gh-user').value.trim();
+  const repo = document.getElementById('gh-repo').value.trim();
+  const path = document.getElementById('gh-path').value.trim() || 'index.html';
+  const token = document.getElementById('gh-token').value.trim();
+  if (!user || !repo || !token) { document.getElementById('gh-err').textContent = 'All fields except file path are required.'; return; }
+  localStorage.setItem(GH_STORE, JSON.stringify({ user, repo, path, token }));
+  updatePublishBtn();
+  closeGhSettings();
+}
+
+function clearGhSettings() {
+  if (!confirm('Remove saved GitHub credentials?')) return;
+  localStorage.removeItem(GH_STORE);
+  updatePublishBtn();
+  closeGhSettings();
+}
+
+/* ── Build self-contained HTML ── */
+function buildHtml() {
+  const src = document.documentElement.outerHTML;
+  // Embed current papers data into the localStorage bootstrap script
+  const dataScript = `<script>try{localStorage.setItem('paperRepo_v3',${JSON.stringify(JSON.stringify(papers))});}catch(e){}<\/script>`;
+  // Insert just before </body>
+  return src.replace(/<\/body>/, dataScript + '</body>');
+}
+
+/* ── Publish modal ── */
+function openPublish() {
+  if (!isGhConfigured()) { openGhSettings(); return; }
+  const s = loadGhSettings();
+  document.getElementById('pub-count').textContent = `${papers.length} paper${papers.length!==1?'s':''}`;
+  document.getElementById('pub-target').textContent = `github.com/${s.user}/${s.repo} → ${s.path||'index.html'}`;
+  document.getElementById('publishBody').style.display = '';
+  document.getElementById('publishProgress').style.display = 'none';
+  document.getElementById('publishFooter').style.display = '';
+  document.getElementById('publishModal').classList.add('open');
+}
+
+function closePublish() { document.getElementById('publishModal').classList.remove('open'); }
+
+async function doPublish() {
+  const s = loadGhSettings();
+  const filePath = s.path || 'index.html';
+  const apiBase = `https://api.github.com/repos/${s.user}/${s.repo}/contents/${filePath}`;
+
+  document.getElementById('publishBody').style.display = 'none';
+  document.getElementById('publishFooter').style.display = 'none';
+  document.getElementById('publishProgress').style.display = '';
+  const status = document.getElementById('publishStatus');
+
+  const headers = {
+    'Authorization': `token ${s.token}`,
+    'Accept': 'application/vnd.github+json',
+    'Content-Type': 'application/json'
+  };
+
+  try {
+    status.textContent = 'Building page…';
+    const html = buildHtml();
+    const encoded = btoa(unescape(encodeURIComponent(html)));
+
+    status.textContent = 'Checking existing file…';
+    let sha = null;
+    try {
+      const check = await fetch(apiBase, { headers });
+      if (check.ok) { const d = await check.json(); sha = d.sha; }
+    } catch(e) {}
+
+    status.textContent = 'Uploading to GitHub…';
+    const body = {
+      message: `Update paper repository — ${papers.length} papers — ${new Date().toISOString().slice(0,10)}`,
+      content: encoded,
+      ...(sha ? { sha } : {})
+    };
+
+    const res = await fetch(apiBase, { method: 'PUT', headers, body: JSON.stringify(body) });
+
+    if (res.ok) {
+      const siteUrl = `https://${s.user}.github.io/${s.repo}`;
+      status.innerHTML = `Published! <br><a href="${siteUrl}" target="_blank" style="color:var(--accent-text);font-size:12px;margin-top:6px;display:inline-block">${siteUrl} ↗</a><br><span style="font-size:11px;color:var(--text3);margin-top:6px;display:block">GitHub Pages usually updates within 1–2 minutes.</span>`;
+      document.getElementById('publishFooter').innerHTML = `<button class="btn btn-primary" onclick="closePublish()">Done</button>`;
+      document.getElementById('publishFooter').style.display = '';
+    } else {
+      const err = await res.json();
+      status.textContent = `Error ${res.status}: ${err.message || 'Unknown error'}`;
+      document.getElementById('publishFooter').innerHTML = `<button class="btn" onclick="openPublish()">Back</button>`;
+      document.getElementById('publishFooter').style.display = '';
+    }
+  } catch(e) {
+    status.textContent = `Failed: ${e.message}`;
+    document.getElementById('publishFooter').innerHTML = `<button class="btn" onclick="openPublish()">Back</button>`;
+    document.getElementById('publishFooter').style.display = '';
+  }
+}
+
+/* ── Bulk Upload ── */
+let bulkFiles = [];
+
+function openBulk() {
+  bulkFiles = [];
+  document.getElementById('bulkQueue').style.display = 'none';
+  document.getElementById('bulkList').innerHTML = '';
+  document.getElementById('bulkStartBtn').disabled = true;
+  document.getElementById('bulkFooter').innerHTML = `
+    <button class="btn" onclick="closeBulk()">Cancel</button>
+    <button class="btn btn-primary" id="bulkStartBtn" onclick="startBulkImport()" disabled>Import all</button>`;
+  document.getElementById('bulkDropArea').style.display = '';
+  document.getElementById('bulkModal').classList.add('open');
+}
+
+function closeBulk() { document.getElementById('bulkModal').classList.remove('open'); }
+
+function bulkDragOver(e) { e.preventDefault(); document.getElementById('bulkDropArea').classList.add('drag-over'); }
+function bulkDragLeave() { document.getElementById('bulkDropArea').classList.remove('drag-over'); }
+function bulkDropped(e) {
+  e.preventDefault();
+  document.getElementById('bulkDropArea').classList.remove('drag-over');
+  const files = [...e.dataTransfer.files].filter(f => f.type === 'application/pdf');
+  prepareBulk(files);
+}
+function bulkFilesChosen(e) { prepareBulk([...e.target.files]); }
+
+function prepareBulk(files) {
+  if (!files.length) return;
+  bulkFiles = files.map(f => {
+    const pmid = f.name.replace(/\.pdf$/i, '').replace(/\s*\[PMID\]\s*/i, '').replace(/\[PMID\]/i, '').trim();
+    const isValid = /^\d+$/.test(pmid);
+    return { file: f, pmid, valid: isValid, status: isValid ? 'ready' : 'bad-name' };
+  });
+
+  document.getElementById('bulkDropArea').style.display = 'none';
+  document.getElementById('bulkQueue').style.display = '';
+  const valid = bulkFiles.filter(b => b.valid).length;
+  const bad = bulkFiles.length - valid;
+  document.getElementById('bulkQueueLabel').textContent =
+    `${bulkFiles.length} file${bulkFiles.length!==1?'s':''} selected — ${valid} valid, ${bad} skipped (non-numeric name)`;
+  renderBulkList();
+  document.getElementById('bulkStartBtn').disabled = valid === 0;
+}
+
+function renderBulkList() {
+  const colors = { ready:'var(--text3)', fetching:'var(--accent-text)', done:'var(--accent-text)', error:'var(--danger)', 'bad-name':'var(--danger)' };
+  const icons = { ready:'○', fetching:'◌', done:'✓', error:'✕', 'bad-name':'✕' };
+  const labels = { ready:'ready', fetching:'fetching from PubMed…', done:'imported', error:'PubMed not found — skipped', 'bad-name':'filename must be a PMID number' };
+  document.getElementById('bulkList').innerHTML = bulkFiles.map((b,i) =>
+    `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface2);border-radius:var(--radius);font-size:12px" id="bulk-row-${i}">
+      <span style="font-family:var(--mono);color:${colors[b.status]};font-size:14px;width:16px;text-align:center">${icons[b.status]}</span>
+      <span style="font-family:var(--mono);color:var(--text2);flex-shrink:0">${b.pmid}</span>
+      <span style="color:var(--text3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.file.name}</span>
+      <span style="color:${colors[b.status]};flex-shrink:0">${labels[b.status]}</span>
+    </div>`
+  ).join('');
+}
+
+function setBulkStatus(i, status) {
+  bulkFiles[i].status = status;
+  const colors = { ready:'var(--text3)', fetching:'var(--accent-text)', done:'var(--accent-text)', error:'var(--danger)', 'bad-name':'var(--danger)' };
+  const icons = { ready:'○', fetching:'◌', done:'✓', error:'✕', 'bad-name':'✕' };
+  const labels = { ready:'ready', fetching:'fetching from PubMed…', done:'imported', error:'PubMed not found — skipped', 'bad-name':'filename must be a PMID number' };
+  const row = document.getElementById(`bulk-row-${i}`);
+  if (!row) return;
+  row.querySelectorAll('span')[0].textContent = icons[status];
+  row.querySelectorAll('span')[0].style.color = colors[status];
+  row.querySelectorAll('span')[3].textContent = labels[status];
+  row.querySelectorAll('span')[3].style.color = colors[status];
+}
+
+async function startBulkImport() {
+  document.getElementById('bulkStartBtn').disabled = true;
+  document.getElementById('bulkFooter').querySelector('.btn').disabled = true;
+
+  const valid = bulkFiles.filter(b => b.valid);
+
+  for (let i = 0; i < bulkFiles.length; i++) {
+    const b = bulkFiles[i];
+    if (!b.valid) continue;
+
+    setBulkStatus(i, 'fetching');
+
+    // Read PDF as base64
+    const pdfData = await new Promise(res => {
+      const r = new FileReader();
+      r.onload = () => res(r.result);
+      r.readAsDataURL(b.file);
+    });
+
+    // Check if paper already exists
+    const existing = papers.findIndex(p => p.pmid === b.pmid);
+
+    // Fetch from PubMed
+    let meta = null;
+    try {
+      const res = await fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${b.pmid}&retmode=json`);
+      const data = await res.json();
+      const r = data.result && data.result[b.pmid];
+      if (r && !r.error) {
+        meta = {
+          title: r.title || `PMID ${b.pmid}`,
+          authors: (r.authors || []).slice(0, 30).map(a => a.name).filter(Boolean),
+          journal: r.source || '',
+          year: r.pubdate ? r.pubdate.split(' ')[0] : '',
+        };
+      }
+    } catch(e) {}
+
+    if (existing > -1) {
+      papers[existing] = { ...papers[existing], hasPdf: true, pdfData,
+        ...(meta ? { title: meta.title, authors: meta.authors, journal: meta.journal, year: meta.year } : {}) };
+    } else {
+      papers.push({
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+        pmid: b.pmid,
+        title: meta ? meta.title : `PMID ${b.pmid}`,
+        authors: meta ? meta.authors : [],
+        journal: meta ? meta.journal : '',
+        year: meta ? meta.year : '',
+        abstract: '',
+        hasPdf: true,
+        pdfData,
+        addedAt: Date.now()
+      });
+    }
+
+    setBulkStatus(i, 'done');
+    save();
+    render();
+
+    // Small delay to avoid hammering PubMed API
+    await new Promise(r => setTimeout(r, 350));
+  }
+
+  const done = bulkFiles.filter(b => b.status === 'done').length;
+  document.getElementById('bulkQueueLabel').textContent = `Done! ${done} paper${done!==1?'s':''} imported.`;
+  document.getElementById('bulkFooter').innerHTML = `<button class="btn btn-primary" onclick="closeBulk()">Close</button>`;
+}
+
+load();
+updatePublishBtn();</script>
+</body>
+</html>
