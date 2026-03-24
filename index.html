@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paper Repository</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root {
+  --bg:#f7f7f5;--surface:#fff;--border:#e5e5e2;--text1:#1a1a1a;--text2:#555550;
+  --text3:#999990;--accent:#2d6a4f;--accent-light:#e8f5ee;--accent-text:#1b4332;
+  --danger:#c0392b;--danger-light:#fdf0ee;--tag-bg:#f0f0ed;
+  --warn:#b45309;--warn-light:#fffbeb;--shadow:0 1px 3px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text1);font-size:14px;line-height:1.5}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px}
+.logo-icon{width:28px;height:28px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;flex-shrink:0}
+.logo-sub{font-size:11px;color:var(--text3);font-weight:400}
+.hactions{margin-left:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text1);font-size:12px;font-weight:500;cursor:pointer;transition:background .12s;white-space:nowrap}
+.btn:hover{background:var(--bg)}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary:hover{background:#245a42}
+.btn-blue{background:#1a56db;color:#fff;border-color:#1a56db}
+.btn-blue:hover{background:#1447c0}
+.layout{display:flex;height:calc(100vh - 56px)}
+.sidebar{width:210px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:16px 14px;overflow-y:auto}
+.main{flex:1;overflow-y:auto;padding:20px}
+.slabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin:16px 0 8px}
+.slabel:first-child{margin-top:0}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px}
+.stat-box{background:var(--bg);border-radius:8px;padding:8px 10px}
+.stat-num{font-size:20px;font-weight:700;line-height:1}
+.stat-lbl{font-size:11px;color:var(--text3);margin-top:2px}
+.stat-box.full{grid-column:1/-1}
+.fitem{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;color:var(--text2);font-size:13px;transition:background .1s}
+.fitem:hover{background:var(--bg)}
+.fitem.active{background:var(--accent-light);color:var(--accent-text);font-weight:500}
+.fdot{width:7px;height:7px;border-radius:50%;background:var(--text3);flex-shrink:0}
+.fitem.active .fdot{background:var(--accent)}
+.snote{font-size:11px;color:var(--text3);line-height:1.5;padding:8px;background:var(--bg);border-radius:6px}
+.search-wrap{position:relative;margin-bottom:14px}
+.search-wrap input{width:100%;padding:9px 14px 9px 38px;border:1px solid var(--border);border-radius:8px;background:var(--surface);font-size:14px;outline:none;transition:border-color .15s}
+.search-wrap input:focus{border-color:var(--accent)}
+.sicon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3)}
+.rbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.rcount{font-size:13px;color:var(--text2)}
+.sort-sel{font-size:12px;color:var(--text2);border:1px solid var(--border);border-radius:6px;padding:3px 8px;background:var(--surface);cursor:pointer}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:9px;box-shadow:var(--shadow);transition:border-color .15s}
+.card:hover{border-color:#bbb}
+.card-title{font-size:14px;font-weight:600;line-height:1.4;margin-bottom:5px}
+.card-authors{font-size:12px;color:var(--text2);margin-bottom:7px}
+.card-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.pmid-tag{background:var(--tag-bg);color:var(--text2);font-size:11px;font-weight:600;padding:2px 6px;border-radius:4px;font-family:monospace}
+.ytag{font-size:12px;color:var(--text3)}
+.jtag{font-size:12px;color:var(--text3);font-style:italic}
+.pdf-badge{margin-left:auto;font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px;text-decoration:none}
+.pdf-badge.has{color:var(--accent)}
+.pdf-badge.queued{color:var(--warn)}
+.pdf-badge.none{color:var(--text3)}
+.cactions{display:flex;gap:3px;margin-left:6px}
+.ibtn{padding:4px;border-radius:5px;border:none;background:none;cursor:pointer;color:var(--text3);font-size:13px;transition:all .1s}
+.ibtn:hover{background:var(--bg);color:var(--text1)}
+.ibtn.del:hover{background:var(--danger-light);color:var(--danger)}
+.empty{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-icon{font-size:36px;margin-bottom:10px}
+.empty-title{font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px}
+/* Modals */
+.backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;align-items:center;justify-content:center;padding:16px}
+.backdrop.open{display:flex}
+.modal{background:var(--surface);border-radius:14px;padding:24px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-wide{max-width:660px}
+.mhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.mtitle{font-size:16px;font-weight:700}
+.xbtn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);padding:2px 6px;border-radius:4px}
+.xbtn:hover{background:var(--bg);color:var(--text1)}
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px}
+.req{color:var(--danger)}
+.fi{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:7px;font-size:14px;color:var(--text1);outline:none;background:var(--surface);transition:border-color .15s}
+.fi:focus{border-color:var(--accent)}
+.fnote{font-size:11px;color:var(--text3);margin-top:4px;line-height:1.5}
+.mfooter{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;padding-top:14px;border-top:1px solid var(--border)}
+.errmsg{color:var(--danger);font-size:12px;margin-top:6px}
+/* Bulk */
+.bulk-list{max-height:380px;overflow-y:auto;margin-top:10px}
+.bitem{display:flex;align-items:flex-start;gap:8px;padding:9px 10px;border-radius:7px;font-size:12px;margin-bottom:5px;background:var(--bg);border:1px solid transparent}
+.bitem.ok{border-color:#86efac}
+.bitem.warn{border-color:#fcd34d;background:var(--warn-light)}
+.bitem.err{border-color:#fca5a5;background:var(--danger-light)}
+.bitem.pending{opacity:.7}
+.bfname{font-weight:600;color:var(--text1);margin-bottom:2px;word-break:break-all}
+.bmatch{color:var(--text2);margin-bottom:2px}
+.bstatus{font-size:11px;font-weight:600}
+.bstatus.ok{color:var(--accent)}
+.bstatus.warn{color:var(--warn)}
+.bstatus.err{color:var(--danger)}
+.bstatus.pending{color:var(--text3)}
+.binfo{flex:1;min-width:0}
+.bactions{flex-shrink:0;display:flex;gap:4px;margin-top:2px}
+.prog-wrap{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin:10px 0}
+.prog-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
+/* Publish */
+.pub-status{text-align:center;padding:16px 0}
+.pub-big{font-size:30px;margin-bottom:8px}
+.pub-msg{font-size:14px;color:var(--text2)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">📄</div>
+    <div>
+      <div>Paper Repository</div>
+      <div class="logo-sub" id="hSub">0 papers</div>
+    </div>
+  </div>
+  <div class="hactions">
+    <button class="btn" onclick="openImport()">Import JSON</button>
+    <button class="btn" onclick="exportJson()">Export JSON</button>
+    <button class="btn" onclick="openGhSettings()" title="GitHub settings">⚙️</button>
+    <button class="btn" style="background:var(--accent-light);color:var(--accent-text);border-color:transparent" onclick="openBulk()">⬆ Bulk upload PDFs</button>
+    <button class="btn btn-primary" onclick="openAdd()">+ Add paper</button>
+    <button class="btn btn-blue" id="pubBtn" onclick="openPublish()" style="display:none">🚀 Publish</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="slabel">Overview</div>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-num" id="sTotal">0</div><div class="stat-lbl">papers</div></div>
+      <div class="stat-box"><div class="stat-num" id="sPdf">0</div><div class="stat-lbl">with PDF</div></div>
+      <div class="stat-box full"><div class="stat-num" id="sAuthors">0</div><div class="stat-lbl">unique authors</div></div>
+    </div>
+    <div class="slabel">Search by</div>
+    <div id="filterList">
+      <div class="fitem active" onclick="setFilter('all',this)"><span class="fdot"></span>All fields</div>
+      <div class="fitem" onclick="setFilter('pmid',this)"><span class="fdot"></span>PMID</div>
+      <div class="fitem" onclick="setFilter('authors',this)"><span class="fdot"></span>Authors</div>
+      <div class="fitem" onclick="setFilter('title',this)"><span class="fdot"></span>Title</div>
+      <div class="fitem" onclick="setFilter('journal',this)"><span class="fdot"></span>Journal</div>
+      <div class="fitem" onclick="setFilter('abstract',this)"><span class="fdot"></span>Abstract</div>
+    </div>
+    <div class="slabel">Show only</div>
+    <div class="fitem" id="fHas" onclick="togglePdfFilter('has')"><span class="fdot"></span>Has PDF</div>
+    <div class="fitem" id="fMiss" onclick="togglePdfFilter('missing')"><span class="fdot"></span>Missing PDF</div>
+    <div class="slabel">Publish</div>
+    <div class="snote">After connecting GitHub (⚙️), click <em>Publish</em> to push all changes live instantly.</div>
+  </aside>
+
+  <main class="main">
+    <div class="search-wrap">
+      <span class="sicon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search by title, authors, PMID, journal, abstract…" oninput="render()">
+    </div>
+    <div class="rbar">
+      <div class="rcount" id="rCount"></div>
+      <select class="sort-sel" id="sortSel" onchange="render()">
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+        <option value="title">Title A–Z</option>
+      </select>
+    </div>
+    <div id="paperList"></div>
+  </main>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="backdrop" id="addModal" onclick="if(event.target===this)closeAdd()">
+  <div class="modal">
+    <div class="mhdr"><div class="mtitle" id="addTitle">Add paper</div><button class="xbtn" onclick="closeAdd()">×</button></div>
+    <div class="fg">
+      <label class="fl">PMID <span class="req">*</span></label>
+      <input class="fi" id="fPmid" type="text" placeholder="e.g. 38291234" oninput="clearAddErr()">
+      <div class="fnote">Enter a PMID to auto-fetch metadata from PubMed.</div>
+    </div>
+    <button class="btn" onclick="fetchPubmed()" style="margin-bottom:14px">🔍 Fetch from PubMed</button>
+    <div class="fg"><label class="fl">Title <span class="req">*</span></label><input class="fi" id="fTitle" type="text" placeholder="Paper title"></div>
+    <div class="fg"><label class="fl">Authors</label><input class="fi" id="fAuthors" type="text" placeholder="Smith J, Jones A, …"></div>
+    <div class="fg"><label class="fl">Journal</label><input class="fi" id="fJournal" type="text" placeholder="e.g. Lancet Neurol"></div>
+    <div class="fg"><label class="fl">Year</label><input class="fi" id="fYear" type="text" placeholder="e.g. 2024"></div>
+    <div class="fg"><label class="fl">Abstract</label><textarea class="fi" id="fAbstract" rows="4" placeholder="Abstract text…"></textarea></div>
+    <div class="errmsg" id="addErr"></div>
+    <div class="mfooter">
+      <button class="btn" onclick="closeAdd()">Cancel</button>
+      <button class="btn btn-primary" onclick="savePaper()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Import Modal -->
+<div class="backdrop" id="importModal" onclick="if(event.target===this)closeImport()">
+  <div class="modal" style="max-width:400px">
+    <div class="mhdr"><div class="mtitle">Import JSON</div><button class="xbtn" onclick="closeImport()">×</button></div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:14px">Select a <code>papers.json</code> file exported from this app.</p>
+    <input type="file" id="importFile" accept=".json" style="font-size:13px">
+    <div class="errmsg" id="importErr"></div>
+    <div class="mfooter">
+      <button class="btn" onclick="closeImport()">Cancel</button>
+      <button class="btn btn-primary" onclick="doImport()">Import</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Upload Modal -->
+<div class="backdrop" id="bulkModal" onclick="if(event.target===this)closeBulk()">
+  <div class="modal modal-wide">
+    <div class="mhdr"><div class="mtitle">Bulk upload PDFs</div><button class="xbtn" onclick="closeBulk()">×</button></div>
+    <div id="bulkStep1">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:6px;line-height:1.6">
+        Select any PDF files — <strong>any filename is fine</strong>. The app will automatically extract the title and authors from each PDF, search PubMed, find the PMID, and queue the file for upload.
+      </p>
+      <p style="font-size:12px;color:var(--text3);margin-bottom:14px">Files that can't be matched will be flagged for manual review after processing.</p>
+      <input type="file" id="bulkFiles" accept=".pdf" multiple style="font-size:13px;margin-bottom:14px;display:block">
+      <div class="mfooter" style="margin-top:0">
+        <button class="btn" onclick="closeBulk()">Cancel</button>
+        <button class="btn btn-primary" onclick="startBulk()">Process files →</button>
+      </div>
+    </div>
+    <div id="bulkStep2" style="display:none">
+      <div id="bulkProgress"></div>
+      <div class="bulk-list" id="bulkList"></div>
+      <div class="mfooter" id="bulkFooter" style="display:none">
+        <button class="btn" onclick="closeBulk()">Close</button>
+        <button class="btn btn-primary" onclick="confirmBulk()">Import matched papers ✓</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Manual Assign Modal -->
+<div class="backdrop" id="assignModal" onclick="if(event.target===this)closeAssign()">
+  <div class="modal" style="max-width:480px">
+    <div class="mhdr"><div class="mtitle">Assign paper manually</div><button class="xbtn" onclick="closeAssign()">×</button></div>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:4px">File: <strong id="assignFname" style="word-break:break-all"></strong></p>
+    <p style="font-size:12px;color:var(--text3);margin-bottom:14px">Extracted text: <em id="assignExtracted"></em></p>
+    <div class="fg">
+      <label class="fl">Enter PMID or search terms</label>
+      <input class="fi" id="assignInput" type="text" placeholder="PMID or title keywords…" oninput="assignLookup()">
+    </div>
+    <div id="assignResults" style="margin-bottom:8px"></div>
+    <div class="errmsg" id="assignErr"></div>
+    <div class="mfooter">
+      <button class="btn" onclick="skipAssign()">Skip this file</button>
+    </div>
+  </div>
+</div>
+
+<!-- GitHub Settings Modal -->
+<div class="backdrop" id="ghModal" onclick="if(event.target===this)closeGhSettings()">
+  <div class="modal" style="max-width:460px">
+    <div class="mhdr"><div class="mtitle">GitHub settings</div><button class="xbtn" onclick="closeGhSettings()">×</button></div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">PDFs are stored in a <code>pdfs/</code> folder in your repo. Your token is stored only in your browser.</p>
+    <div class="fg"><label class="fl">GitHub username <span class="req">*</span></label><input class="fi" id="ghUser" type="text" placeholder="e.g. sposatol"></div>
+    <div class="fg"><label class="fl">Repository name <span class="req">*</span></label><input class="fi" id="ghRepo" type="text" placeholder="e.g. ARCADE"></div>
+    <div class="fg">
+      <label class="fl">Personal Access Token <span class="req">*</span></label>
+      <input class="fi" id="ghToken" type="password" placeholder="github_pat_…">
+      <div class="fnote">Needs <strong>Contents: Read and write</strong> on this repo only.</div>
+    </div>
+    <div class="errmsg" id="ghErr"></div>
+    <div class="mfooter">
+      <button class="btn" style="color:var(--danger);border-color:var(--danger)" onclick="clearGh()">Clear</button>
+      <button class="btn" onclick="closeGhSettings()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveGh()">Save & connect</button>
+    </div>
+  </div>
+</div>
+
+<!-- Publish Modal -->
+<div class="backdrop" id="publishModal">
+  <div class="modal" style="max-width:440px">
+    <div class="mhdr"><div class="mtitle">Publish to GitHub</div><button class="xbtn" id="pubClose" onclick="closePublish()">×</button></div>
+    <div id="pubBody"></div>
+  </div>
+</div>
+
+<script>
+// Configure PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const STORE = 'paperRepo_v5';
+const GH_STORE = 'paperRepo_gh';
+const PDF_Q = 'paperRepo_pdfQ';
+
+let papers = [];
+let editingId = null;
+let filterField = 'all';
+let pdfFilter = null;
+let pendingPdfs = {}; // pmid -> {dataUrl}
+
+// ── Storage ──
+function save() {
+  localStorage.setItem(STORE, JSON.stringify(papers));
+}
+function load() {
+  try { papers = JSON.parse(localStorage.getItem(STORE)) || []; } catch(e) { papers = []; }
+  try { pendingPdfs = JSON.parse(localStorage.getItem(PDF_Q)) || {}; } catch(e) { pendingPdfs = {}; }
+  render(); updateStats(); updatePubBtn();
+}
+function savePdfQ() {
+  try { localStorage.setItem(PDF_Q, JSON.stringify(pendingPdfs)); } catch(e) {}
+}
+
+// ── GitHub ──
+function loadGh() { try { return JSON.parse(localStorage.getItem(GH_STORE)) || {}; } catch(e) { return {}; } }
+function isGhOk() { const s = loadGh(); return !!(s.user && s.repo && s.token); }
+function updatePubBtn() { document.getElementById('pubBtn').style.display = isGhOk() ? '' : 'none'; }
+function openGhSettings() {
+  const s = loadGh();
+  document.getElementById('ghUser').value = s.user || '';
+  document.getElementById('ghRepo').value = s.repo || '';
+  document.getElementById('ghToken').value = s.token || '';
+  document.getElementById('ghErr').textContent = '';
+  document.getElementById('ghModal').classList.add('open');
+}
+function closeGhSettings() { document.getElementById('ghModal').classList.remove('open'); }
+function saveGh() {
+  const user = document.getElementById('ghUser').value.trim();
+  const repo = document.getElementById('ghRepo').value.trim();
+  const token = document.getElementById('ghToken').value.trim();
+  if (!user || !repo || !token) { document.getElementById('ghErr').textContent = 'All fields required.'; return; }
+  localStorage.setItem(GH_STORE, JSON.stringify({ user, repo, token }));
+  updatePubBtn(); closeGhSettings();
+}
+function clearGh() {
+  if (!confirm('Remove GitHub credentials?')) return;
+  localStorage.removeItem(GH_STORE); updatePubBtn(); closeGhSettings();
+}
+
+// ── Render ──
+function render() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const sort = document.getElementById('sortSel').value;
+  let list = [...papers];
+  if (pdfFilter === 'has') list = list.filter(p => p.hasPdf || pendingPdfs[p.pmid]);
+  if (pdfFilter === 'missing') list = list.filter(p => !p.hasPdf && !pendingPdfs[p.pmid]);
+  if (q) list = list.filter(p => {
+    const hay = filterField === 'all'
+      ? [p.pmid, p.doi, p.title, p.authors, p.journal, p.abstract].join(' ')
+      : (p[filterField] || '');
+    return hay.toLowerCase().includes(q);
+  });
+  if (sort === 'newest') list.sort((a,b) => (b.year||0)-(a.year||0));
+  else if (sort === 'oldest') list.sort((a,b) => (a.year||0)-(b.year||0));
+  else list.sort((a,b) => (a.title||'').localeCompare(b.title||''));
+  document.getElementById('rCount').textContent = `${list.length} result${list.length!==1?'s':''}`;
+  const s = loadGh();
+  const el = document.getElementById('paperList');
+  if (!list.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-title">No papers found</div><div>Try a different search or add a paper.</div></div>`;
+    return;
+  }
+  el.innerHTML = list.map(p => {
+    const queued = !!pendingPdfs[p.pmid];
+    const pdfUrl = p.hasPdf && s.user && s.repo ? `https://${s.user}.github.io/${s.repo}/pdfs/${p.pmid}.pdf` : null;
+    const badge = queued
+      ? `<span class="pdf-badge queued">⏳ queued</span>`
+      : pdfUrl
+        ? `<a class="pdf-badge has" href="${pdfUrl}" target="_blank">✓ PDF ↗</a>`
+        : `<span class="pdf-badge none">— no PDF</span>`;
+    return `<div class="card">
+      <div class="card-title">${esc(p.title)}</div>
+      <div class="card-authors">${esc(p.authors||'')}</div>
+      <div class="card-meta">
+        ${p.doi ? `<span class="pmid-tag" title="${esc(p.doi)}">DOI</span>` : `<span class="pmid-tag">${esc(p.pmid)}</span>`}
+        ${p.year?`<span class="ytag">${p.year}</span>`:''}
+        ${p.journal?`<span class="jtag">${esc(p.journal)}</span>`:''}
+        ${badge}
+        <div class="cactions">
+          <button class="ibtn" onclick="editPaper('${p.pmid}')">✏️</button>
+          <button class="ibtn del" onclick="deletePaper('${p.pmid}')">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateStats() {
+  const total = papers.length;
+  const withPdf = papers.filter(p => p.hasPdf || pendingPdfs[p.pmid]).length;
+  const authors = new Set(papers.flatMap(p => (p.authors||'').split(',').map(a=>a.trim()).filter(Boolean)));
+  document.getElementById('sTotal').textContent = total;
+  document.getElementById('sPdf').textContent = withPdf;
+  document.getElementById('sAuthors').textContent = authors.size;
+  document.getElementById('hSub').textContent = `${total} paper${total!==1?'s':''}`;
+}
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function setFilter(field, el) {
+  filterField = field;
+  document.querySelectorAll('#filterList .fitem').forEach(e => e.classList.remove('active'));
+  el.classList.add('active'); render();
+}
+function togglePdfFilter(type) {
+  pdfFilter = pdfFilter === type ? null : type;
+  document.getElementById('fHas').classList.toggle('active', pdfFilter==='has');
+  document.getElementById('fMiss').classList.toggle('active', pdfFilter==='missing');
+  render();
+}
+
+// ── Add/Edit ──
+function openAdd() {
+  editingId = null;
+  document.getElementById('addTitle').textContent = 'Add paper';
+  ['Pmid','Title','Authors','Journal','Year','Abstract'].forEach(f => document.getElementById('f'+f).value = '');
+  document.getElementById('addErr').textContent = '';
+  document.getElementById('addModal').classList.add('open');
+}
+function closeAdd() { document.getElementById('addModal').classList.remove('open'); }
+function clearAddErr() { document.getElementById('addErr').textContent = ''; }
+function editPaper(pmid) {
+  const p = papers.find(x => x.pmid===pmid); if (!p) return;
+  editingId = pmid;
+  document.getElementById('addTitle').textContent = 'Edit paper';
+  document.getElementById('fPmid').value = p.pmid;
+  document.getElementById('fTitle').value = p.title||'';
+  document.getElementById('fAuthors').value = p.authors||'';
+  document.getElementById('fJournal').value = p.journal||'';
+  document.getElementById('fYear').value = p.year||'';
+  document.getElementById('fAbstract').value = p.abstract||'';
+  document.getElementById('addErr').textContent = '';
+  document.getElementById('addModal').classList.add('open');
+}
+function deletePaper(pmid) {
+  if (!confirm('Delete this paper?')) return;
+  papers = papers.filter(p => p.pmid!==pmid);
+  delete pendingPdfs[pmid]; savePdfQ();
+  save(); render(); updateStats();
+}
+async function fetchPubmed() {
+  const pmid = document.getElementById('fPmid').value.trim();
+  if (!pmid) { document.getElementById('addErr').textContent = 'Enter a PMID first.'; return; }
+  document.getElementById('addErr').textContent = 'Fetching…';
+  const data = await pubmedFetchByPmid(pmid);
+  if (!data) { document.getElementById('addErr').textContent = 'Not found on PubMed.'; return; }
+  document.getElementById('fTitle').value = data.title||'';
+  document.getElementById('fAuthors').value = data.authors||'';
+  document.getElementById('fJournal').value = data.journal||'';
+  document.getElementById('fYear').value = data.year||'';
+  document.getElementById('fAbstract').value = data.abstract||'';
+  document.getElementById('addErr').textContent = '';
+}
+function savePaper() {
+  const pmid = document.getElementById('fPmid').value.trim();
+  const title = document.getElementById('fTitle').value.trim();
+  if (!pmid) { document.getElementById('addErr').textContent = 'PMID required.'; return; }
+  if (!title) { document.getElementById('addErr').textContent = 'Title required.'; return; }
+  if (!editingId && papers.find(p => p.pmid===pmid)) { document.getElementById('addErr').textContent = 'PMID already exists.'; return; }
+  const paper = {
+    pmid, title,
+    authors: document.getElementById('fAuthors').value.trim(),
+    journal: document.getElementById('fJournal').value.trim(),
+    year: parseInt(document.getElementById('fYear').value)||null,
+    abstract: document.getElementById('fAbstract').value.trim(),
+    hasPdf: editingId ? (papers.find(p=>p.pmid===editingId)?.hasPdf||false) : false,
+    addedAt: editingId ? (papers.find(p=>p.pmid===editingId)?.addedAt||Date.now()) : Date.now()
+  };
+  if (editingId) papers = papers.map(p => p.pmid===editingId ? paper : p);
+  else papers.push(paper);
+  save(); render(); updateStats(); closeAdd();
+}
+
+// ── Import/Export ──
+function openImport() { document.getElementById('importModal').classList.add('open'); }
+function closeImport() { document.getElementById('importModal').classList.remove('open'); }
+function exportJson() {
+  const blob = new Blob([JSON.stringify(papers,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='papers.json'; a.click();
+}
+function doImport() {
+  const file = document.getElementById('importFile').files[0];
+  if (!file) { document.getElementById('importErr').textContent='Select a file first.'; return; }
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data)) throw new Error();
+      papers = data; save(); render(); updateStats(); closeImport();
+    } catch { document.getElementById('importErr').textContent='Invalid JSON file.'; }
+  };
+  r.readAsText(file);
+}
+
+// ── PubMed API ──
+async function pubmedFetchByPmid(pmid) {
+  try {
+    const r = await fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${pmid}&retmode=json`);
+    const j = await r.json();
+    const doc = j.result?.[pmid];
+    if (!doc || doc.error) return null;
+    const authors = (doc.authors||[]).map(a=>a.name).join(', ');
+    let abstract = '';
+    try {
+      const ar = await fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=${pmid}&rettype=abstract&retmode=text`);
+      const at = await ar.text();
+      const m = at.match(/Abstract\n([\s\S]+?)(?:\n\n|\nCopyright|\nPMID)/);
+      if (m) abstract = m[1].replace(/\n/g,' ').trim();
+    } catch(e) {}
+    return { pmid, title: doc.title?.replace(/\.$/, '')||'', authors, journal: doc.source||'', year: doc.pubdate?.substring(0,4)||'', abstract };
+  } catch(e) { return null; }
+}
+
+async function pubmedSearchByQuery(query) {
+  // Returns array of PMIDs
+  try {
+    const r = await fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${encodeURIComponent(query)}&retmax=5&retmode=json`);
+    const j = await r.json();
+    return j.esearchresult?.idlist || [];
+  } catch(e) { return []; }
+}
+
+// ── PDF Text Extraction ──
+async function extractPdfText(file) {
+  try {
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+    let text = '';
+    const pages = Math.min(pdf.numPages, 3); // read up to 3 pages
+    for (let i = 1; i <= pages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map(item => item.str).join(' ') + '\n';
+    }
+    return text.trim();
+  } catch(e) { return ''; }
+}
+
+// ── PDF Metadata Extraction (title, DOI from document properties) ──
+async function extractPdfMetadata(file) {
+  try {
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+    const meta = await pdf.getMetadata();
+    const info = meta?.info || {};
+    const metaXml = meta?.metadata;
+    let doi = null;
+    let title = info.Title || '';
+    // Check custom metadata for DOI
+    if (info.doi) doi = info.doi;
+    if (info.DOI) doi = info.DOI;
+    // Try to extract DOI from Subject or custom fields
+    for (const key of Object.keys(info)) {
+      const val = String(info[key] || '');
+      if (!doi && /10\.\d{4,9}\//.test(val)) {
+        const m = val.match(/(10\.\d{4,9}\/[^\s"'<>|{}^[\]`\\,;]+)/);
+        if (m) doi = m[1].replace(/[.,;:)\]]+$/, '');
+      }
+    }
+    // Try XML metadata (some publishers store DOI here)
+    if (!doi && metaXml) {
+      try {
+        const xml = metaXml.getAll();
+        for (const [k, v] of Object.entries(xml || {})) {
+          const s = String(v || '');
+          if (/10\.\d{4,9}\//.test(s)) {
+            const m = s.match(/(10\.\d{4,9}\/[^\s"'<>|{}^[\]`\\,;]+)/);
+            if (m) { doi = m[1].replace(/[.,;:)\]]+$/, ''); break; }
+          }
+        }
+      } catch(e) {}
+    }
+    // Clean title — skip if it's a generic placeholder
+    if (title && /^(untitled|microsoft word|unknown|\.docx?|\.pdf)$/i.test(title.trim())) title = '';
+    return { title: title || '', doi: doi || '' };
+  } catch(e) { return { title: '', doi: '' }; }
+}
+
+// ── DOI extraction ──
+function extractDoi(text) {
+  // First try: DOI in URL form (cleanest)
+  let m = text.match(/(?:https?:\/\/)?doi\.org\/(10\.\d{4,9}\/[^\s"'<>|{}^[\]`\\,;]+)/i);
+  if (!m) {
+    // Second try: bare DOI pattern
+    m = text.match(/\b(10\.\d{4,9}\/[^\s"'<>|{}^[\]`\\,;]{4,})/);
+  }
+  if (!m) return null;
+  let doi = m[1];
+  // Clean trailing punctuation
+  doi = doi.replace(/[.,;:)\]]+$/, '');
+  // Strip trailing text that got concatenated from PDF extraction
+  // Common: "10.xxxx/yyyyPublished", "10.xxxx/yyyyAvailable", "10.xxxx/yyyyhttp"
+  doi = doi.replace(/(Published|Available|Accepted|Received|Copyright|Open|Downloaded|Accessed|Article|Research|Abstract|Introduction|Background|Methods|Results|Conclusion|Full|Text|http|www\.|Epub|Advance|Online|First|Corresponding|ORIGINAL|REVIEW).*$/i, '');
+  // Strip if DOI ends with a long run of lowercase letters (likely a word, not a DOI suffix)
+  doi = doi.replace(/[a-z]{8,}$/, '');
+  // Clean trailing punctuation again after stripping
+  doi = doi.replace(/[.,;:)\]\-_]+$/, '');
+  return doi || null;
+}
+
+// ── Try resolving a DOI with progressive trimming ──
+async function resolveDoiWithRetry(doi, fetchFn) {
+  // Try full DOI first
+  let result = await fetchFn(doi);
+  if (result) return result;
+  // If it ends with digits or mixed chars, try trimming last segment progressively
+  // This handles cases where PDF text appended characters to the DOI
+  for (let i = 0; i < 3; i++) {
+    // Trim last path-like segment or trailing characters
+    const shorter = doi.replace(/[^\/]+$/, '').replace(/\/+$/, '');
+    if (shorter === doi || shorter.length < 10) break;
+    doi = shorter;
+  }
+  return null;
+}
+
+// ── PubMed lookup by DOI ──
+async function pubmedFetchByDoi(doi) {
+  try {
+    const r = await fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${encodeURIComponent(doi+'[DOI]')}&retmax=1&retmode=json`);
+    const j = await r.json();
+    const ids = j.esearchresult?.idlist || [];
+    if (!ids.length) return null;
+    return await pubmedFetchByPmid(ids[0]);
+  } catch(e) { return null; }
+}
+
+// ── CrossRef lookup by DOI (fallback when PubMed has no match) ──
+async function crossrefFetchByDoi(doi) {
+  try {
+    // Use filter query param instead of DOI in path — avoids URL encoding issues with slashes
+    const url = `https://api.crossref.org/works?filter=doi:${encodeURIComponent(doi)}&rows=1`;
+    const r = await fetch(url, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!r.ok) return null;
+    const j = await r.json();
+    const items = j.message?.items;
+    if (!items || !items.length) return null;
+    const w = items[0];
+    const title = Array.isArray(w.title) ? w.title[0] : (w.title || '');
+    if (!title) return null;
+    const authors = (w.author || []).map(a => {
+      if (a.family && a.given) return `${a.family} ${a.given.charAt(0)}`;
+      return a.family || a.name || '';
+    }).filter(Boolean).join(', ');
+    const journal = (w['container-title'] || [])[0] || w.publisher || '';
+    const year = w.published?.['date-parts']?.[0]?.[0]
+      || w['published-print']?.['date-parts']?.[0]?.[0]
+      || w['published-online']?.['date-parts']?.[0]?.[0]
+      || '';
+    const doiClean = w.DOI || doi;
+    return { pmid: null, doi: doiClean, title: title.replace(/\.$/, ''), authors, journal, year: String(year), abstract: '' };
+  } catch(e) { return null; }
+}
+
+// ── Smart PubMed Query Builder ──
+const STOPWORDS = new Set(['the','a','an','of','in','on','at','to','for','with','and','or','but','is','are','was','were','be','been','being','by','from','as','this','that','these','those','it','its','not','no','nor','so','yet','both','either','each','few','more','most','other','some','such','than','then','too','very','can','will','just','because','while','although','after','before','during','between','about','into','through','over','under','against','above','within','without','among','across','along','open','access','article','research','original','study','review','journal','published','received','revised','accepted','copyright','author','authors','rights','reserved']);
+
+function buildPubmedQuery(text) {
+  // Clean up spaced-out letters common in some PDFs: "R E S E A R C H" -> "RESEARCH"
+  const cleaned = text
+    .replace(/\b([A-Z] ){2,}[A-Z]\b/g, m => m.replace(/ /g,''))
+    .replace(/\s+/g, ' ').trim();
+
+  const lines = cleaned.split(/[\n|]+/).map(l => l.trim()).filter(l => l.length > 5);
+
+  // Skip noise lines: URLs, dates, copyright, journal headers, DOIs, disclaimers
+  const noisePattern = /^(https?:|doi:|http|©|copyright|received|revised|accepted|editor|open access|research article|original article|as a library|nlm provides|inclusion in an nlm|this article|disclaimer|pmid|pmcid|pubmed|bookshelf id|\d{1,2}\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))/i;
+
+  // Find title: first substantive line not matching noise, between 20-300 chars
+  let titleLine = '';
+  let authorLine = '';
+  for (let i = 0; i < Math.min(lines.length, 20); i++) {
+    const l = lines[i];
+    if (!titleLine && l.length >= 20 && l.length <= 300 && !noisePattern.test(l) && !/^\d/.test(l)) {
+      titleLine = l;
+    } else if (titleLine && !authorLine && l.length >= 5 && l.length <= 250 && /[A-Z][a-z]/.test(l) && !noisePattern.test(l)) {
+      // Potential author line: contains mixed case names
+      authorLine = l;
+      break;
+    }
+  }
+
+  // Extract author surnames (up to 2) — look for Lastname pattern
+  const authorNames = [];
+  if (authorLine) {
+    const parts = authorLine.split(/[,;·•]+/).map(s => s.trim()).filter(Boolean);
+    for (const part of parts.slice(0, 4)) {
+      const m = part.match(/^([A-Z][a-z]{2,18})/);
+      if (m && !STOPWORDS.has(m[1].toLowerCase())) {
+        authorNames.push(m[1]);
+        if (authorNames.length >= 2) break;
+      }
+    }
+  }
+
+  // Extract meaningful title words
+  const titleWords = (titleLine || lines.slice(0,3).join(' '))
+    .replace(/[^a-zA-Z\s-]/g, ' ')
+    .split(/\s+/)
+    .map(w => w.toLowerCase().replace(/-/g,''))
+    .filter(w => w.length > 3 && !STOPWORDS.has(w));
+
+  const first3 = titleWords.slice(0, 3);
+  const rest = titleWords.slice(3);
+  const pick2 = rest.length >= 2
+    ? [rest[Math.floor(rest.length * 0.4)], rest[Math.floor(rest.length * 0.7)]].filter(Boolean)
+    : rest.slice(0, 2);
+  const selectedWords = [...new Set([...first3, ...pick2])].filter(Boolean);
+
+  const authorParts = authorNames.map(n => `${n}[AU]`);
+  const titleParts = selectedWords.map(w => `${w}[TI]`);
+  const fullQuery = [...authorParts, ...titleParts].join(' AND ');
+  const titleOnlyQuery = titleParts.join(' AND ');
+
+  return { fullQuery, titleOnlyQuery, titleLine, authorLine };
+}
+
+// ── Bulk Upload ──
+const delay = ms => new Promise(r => setTimeout(r, ms));
+let bulkItems = []; // {file, fname, status, pmid, meta, cls, extracted}
+let assignIdx = null;
+
+function openBulk() {
+  bulkItems = [];
+  document.getElementById('bulkStep1').style.display = '';
+  document.getElementById('bulkStep2').style.display = 'none';
+  document.getElementById('bulkFiles').value = '';
+  document.getElementById('bulkModal').classList.add('open');
+}
+function closeBulk() { document.getElementById('bulkModal').classList.remove('open'); }
+
+async function startBulk() {
+  const files = document.getElementById('bulkFiles').files;
+  if (!files.length) return;
+
+  document.getElementById('bulkStep1').style.display = 'none';
+  document.getElementById('bulkStep2').style.display = '';
+  document.getElementById('bulkFooter').style.display = 'none';
+
+  bulkItems = Array.from(files).map(f => ({
+    file: f, fname: f.name, status: 'pending', pmid: null, meta: null, cls: 'pending', extracted: ''
+  }));
+
+  renderBulkList('Extracting text from PDFs…', 0, bulkItems.length);
+
+  for (let i = 0; i < bulkItems.length; i++) {
+    const item = bulkItems[i];
+    renderBulkList(`Processing ${i+1} of ${bulkItems.length}…`, i, bulkItems.length);
+
+    // Step 1: Extract text and metadata from PDF
+    const text = await extractPdfText(item.file);
+    const pdfMeta = await extractPdfMetadata(item.file);
+    item.extracted = text.substring(0, 300);
+
+    // Step 2: Try PMID detection from filename first (fast path)
+    const fnPmid = (item.fname.match(/\b(\d{6,9})\b/) || [])[1];
+    if (fnPmid) {
+      const meta = await pubmedFetchByPmid(fnPmid);
+      if (meta) {
+        item.pmid = fnPmid; item.meta = meta;
+        item.status = 'matched'; item.cls = 'ok';
+        renderBulkList(`Processing ${i+1} of ${bulkItems.length}…`, i+1, bulkItems.length);
+        continue;
+      }
+    }
+
+    if (!text) {
+      item.status = 'unmatched'; item.cls = 'err';
+      renderBulkList(`Processing ${i+1} of ${bulkItems.length}…`, i+1, bulkItems.length);
+      continue;
+    }
+
+    // Step 3: Try DOI lookup — most reliable method
+    // Check both text content and PDF metadata for DOI
+    const textDoi = extractDoi(text);
+    const metaDoi = pdfMeta.doi ? pdfMeta.doi : null;
+    const doi = textDoi || metaDoi;
+    if (doi) {
+      item.extracted = `DOI: ${doi}`;
+      // Try PubMed first
+      const doiMeta = await pubmedFetchByDoi(doi);
+      if (doiMeta) {
+        item.pmid = doiMeta.pmid; item.meta = doiMeta;
+        item.status = 'matched'; item.cls = 'ok';
+        renderBulkList(`Processing ${i+1} of ${bulkItems.length}…`, i+1, bulkItems.length);
+        continue;
+      }
+      // Fallback: CrossRef (works for papers not yet in PubMed)
+      await delay(300); // avoid CrossRef rate limiting
+      let crMeta = await crossrefFetchByDoi(doi);
+      // If CrossRef fails, try trimming DOI progressively (PDF text artifact)
+      if (!crMeta) {
+        let trimmed = doi;
+        for (let attempt = 0; attempt < 3; attempt++) {
+          // Remove last segment after the last dot, dash, or slash
+          const shorter = trimmed.replace(/[\.\-\/][^.\-\/]*$/, '');
+          if (shorter === trimmed || shorter.length < 15) break;
+          trimmed = shorter;
+          crMeta = await crossrefFetchByDoi(trimmed);
+          if (crMeta) { item.extracted = `DOI: ${trimmed} (cleaned)`; break; }
+          await delay(300);
+        }
+      }
+      if (crMeta) {
+        item.pmid = crMeta.doi; item.meta = crMeta; item.useDoi = true;
+        item.status = 'matched'; item.cls = 'ok';
+        renderBulkList(`Processing ${i+1} of ${bulkItems.length}…`, i+1, bulkItems.length);
+        continue;
+      }
+      // Last resort: we have a DOI but no service resolved it — extract what we can from the PDF text
+      const { titleLine } = buildPubmedQuery(text);
+      const bestTitle = titleLine || pdfMeta.title;
+      if (bestTitle) {
+        item.pmid = doi; item.useDoi = true;
+        item.meta = { pmid: null, doi, title: bestTitle.replace(/\.$/, ''), authors: '', journal: '', year: '', abstract: '' };
+        item.status = 'auto'; item.cls = 'warn';
+        renderBulkList(`Processing ${i+1} of ${bulkItems.length}…`, i+1, bulkItems.length);
+        continue;
+      }
+    }
+
+    // Step 4: Build smart query from extracted text
+    const { fullQuery, titleOnlyQuery } = buildPubmedQuery(text);
+
+    // Step 5: Search with full query (authors + title words)
+    let pmids = fullQuery ? await pubmedSearchByQuery(fullQuery) : [];
+
+    // Step 6: Fallback to title-only query
+    if (!pmids.length && titleOnlyQuery) {
+      pmids = await pubmedSearchByQuery(titleOnlyQuery);
+    }
+
+    // Step 7: Fallback to PDF metadata title if available
+    if (!pmids.length && pdfMeta.title && pdfMeta.title.length > 10) {
+      const metaTitleWords = pdfMeta.title.replace(/[^a-zA-Z\s]/g, ' ').split(/\s+/)
+        .filter(w => w.length > 3).slice(0, 5).join(' ');
+      if (metaTitleWords) {
+        pmids = await pubmedSearchByQuery(metaTitleWords + '[TI]');
+      }
+    }
+
+    if (pmids.length > 0) {
+      // Fetch metadata for top result
+      const meta = await pubmedFetchByPmid(pmids[0]);
+      if (meta) {
+        item.pmid = pmids[0]; item.meta = meta;
+        item.status = pmids.length === 1 ? 'matched' : 'auto'; // 'auto' = picked top of multiple
+        item.cls = pmids.length === 1 ? 'ok' : 'warn';
+      } else {
+        item.status = 'unmatched'; item.cls = 'err';
+      }
+    } else {
+      item.status = 'unmatched'; item.cls = 'err';
+    }
+
+    renderBulkList(`Processing ${i+1} of ${bulkItems.length}…`, i+1, bulkItems.length);
+  }
+
+  // Done processing — auto-import all matched papers
+  const matched = bulkItems.filter(i => ['matched','auto'].includes(i.status)).length;
+  const unmatched = bulkItems.filter(i => i.status === 'unmatched').length;
+
+  if (matched > 0) {
+    renderBulkList(`Importing ${matched} matched paper${matched!==1?'s':''}…`, bulkItems.length, bulkItems.length);
+    await confirmBulk();
+  } else {
+    renderBulkList(`Done. ${matched} matched, ${unmatched} need review.`, bulkItems.length, bulkItems.length);
+    document.getElementById('bulkFooter').style.display = '';
+    document.getElementById('bulkFooter').innerHTML = '<button class="btn btn-primary" onclick="closeBulk()">Done</button>';
+  }
+}
+
+function renderBulkList(progressMsg, done, total) {
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('bulkProgress').innerHTML = `
+    <div style="font-size:13px;color:var(--text2);margin-bottom:6px">${progressMsg}</div>
+    <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%"></div></div>`;
+
+  document.getElementById('bulkList').innerHTML = bulkItems.map((item, idx) => {
+    const statusLabel = item.status === 'matched' ? (item.useDoi ? '✓ matched via DOI' : '✓ matched') :
+      item.status === 'auto' ? '⚠ auto-matched (verify)' :
+      item.status === 'unmatched' ? '✗ not found' : '…';
+    return `<div class="bitem ${item.cls}">
+      <div class="binfo">
+        <div class="bfname">${esc(item.fname)}</div>
+        ${item.meta ? `<div class="bmatch">${esc(item.meta.title?.substring(0,80))}${(item.meta.title?.length||0)>80?'…':''} <span style="color:var(--text3)">(${item.meta.year||'?'})</span></div>` : ''}
+        ${item.status==='unmatched' ? `<div class="bmatch" style="color:var(--text3);font-size:11px">${esc(item.extracted.substring(0,150))}${item.extracted.length>150?'…':''}</div>` : ''}
+        <div class="bstatus ${item.cls==='ok'?'ok':item.cls==='warn'?'warn':item.cls==='err'?'err':'pending'}">${statusLabel}</div>
+      </div>
+      <div class="bactions">
+        ${item.status !== 'pending' ? `<button class="btn" style="padding:3px 8px;font-size:11px" onclick="openAssign(${idx})">✏️ Edit</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Manual Assign ──
+let assignTimer = null;
+function openAssign(idx) {
+  assignIdx = idx;
+  const item = bulkItems[idx];
+  document.getElementById('assignFname').textContent = item.fname;
+  document.getElementById('assignExtracted').textContent = item.extracted.substring(0,120) + '…';
+  document.getElementById('assignInput').value = item.meta?.title || '';
+  document.getElementById('assignErr').textContent = '';
+  document.getElementById('assignResults').innerHTML = '';
+  document.getElementById('assignModal').classList.add('open');
+  if (item.meta?.title) assignLookup();
+}
+function closeAssign() { document.getElementById('assignModal').classList.remove('open'); }
+function skipAssign() { closeAssign(); }
+
+function assignLookup() {
+  clearTimeout(assignTimer);
+  const val = document.getElementById('assignInput').value.trim();
+  if (!val) return;
+  document.getElementById('assignResults').innerHTML = '<div style="font-size:12px;color:var(--text3)">Searching…</div>';
+  assignTimer = setTimeout(async () => {
+    // If it's a PMID
+    if (/^\d{6,9}$/.test(val)) {
+      const meta = await pubmedFetchByPmid(val);
+      if (meta) {
+        showAssignResult([meta]);
+      } else {
+        document.getElementById('assignResults').innerHTML = '<div style="font-size:12px;color:var(--danger)">PMID not found.</div>';
+      }
+      return;
+    }
+    // Otherwise search
+    const pmids = await pubmedSearchByQuery(val + '[TI]');
+    if (!pmids.length) { document.getElementById('assignResults').innerHTML = '<div style="font-size:12px;color:var(--danger)">No results found. Try different keywords.</div>'; return; }
+    const metas = (await Promise.all(pmids.slice(0,3).map(p => pubmedFetchByPmid(p)))).filter(Boolean);
+    showAssignResult(metas);
+  }, 600);
+}
+
+function showAssignResult(metas) {
+  document.getElementById('assignResults').innerHTML = metas.map((m,i) => `
+    <div style="padding:8px;background:var(--bg);border-radius:7px;margin-bottom:6px;cursor:pointer;border:1px solid var(--border)" onclick="selectAssign('${m.pmid}',${i})" id="ar${i}">
+      <div style="font-size:12px;font-weight:600">${esc(m.title?.substring(0,100))}${(m.title?.length||0)>100?'…':''}</div>
+      <div style="font-size:11px;color:var(--text3)">${esc(m.authors?.split(',').slice(0,2).join(','))} · ${m.year} · PMID ${m.pmid}</div>
+      <button class="btn btn-primary" style="margin-top:6px;padding:3px 10px;font-size:11px">Select this paper</button>
+    </div>`).join('');
+}
+
+async function selectAssign(pmid, idx) {
+  const meta = await pubmedFetchByPmid(pmid);
+  if (!meta) return;
+  bulkItems[assignIdx].pmid = pmid;
+  bulkItems[assignIdx].meta = meta;
+  bulkItems[assignIdx].status = 'matched';
+  bulkItems[assignIdx].cls = 'ok';
+  closeAssign();
+  const matched = bulkItems.filter(i => ['matched','auto'].includes(i.status)).length;
+  const unmatched = bulkItems.filter(i => i.status === 'unmatched').length;
+  renderBulkList(`${matched} matched, ${unmatched} still need review.`, bulkItems.length, bulkItems.length);
+}
+
+async function confirmBulk() {
+  const toImport = bulkItems.filter(i => ['matched','auto'].includes(i.status));
+  if (!toImport.length) { closeBulk(); return; }
+
+  document.getElementById('bulkFooter').style.display = 'none';
+  renderBulkList('Reading PDF files…', 0, toImport.length);
+
+  let imported = 0;
+  for (const item of toImport) {
+    // Use PMID as key if available, otherwise generate a DOI-based key
+    const paperKey = item.useDoi ? 'doi_' + item.pmid.replace(/[^a-zA-Z0-9]/g, '_') : item.pmid;
+    const existing = papers.find(p => p.pmid === paperKey);
+    const dataUrl = await readFileAsDataUrl(item.file);
+
+    if (!existing) {
+      papers.push({
+        pmid: paperKey,
+        doi: item.useDoi ? item.pmid : null,
+        title: item.meta.title,
+        authors: item.meta.authors,
+        journal: item.meta.journal,
+        year: parseInt(item.meta.year)||null,
+        abstract: item.meta.abstract,
+        hasPdf: true,
+        addedAt: Date.now()
+      });
+    } else {
+      existing.hasPdf = true;
+    }
+
+    pendingPdfs[paperKey] = { dataUrl };
+    savePdfQ();
+    imported++;
+    renderBulkList(`Queuing PDFs… ${imported}/${toImport.length}`, imported, toImport.length);
+  }
+
+  save(); render(); updateStats();
+  const skipped = bulkItems.filter(i => i.status === 'unmatched').length;
+  document.getElementById('bulkProgress').innerHTML = `
+    <div style="font-size:13px;font-weight:600;color:var(--accent);margin-bottom:4px">✓ ${imported} paper${imported!==1?'s':''} imported and queued for upload.</div>
+    ${skipped ? `<div style="font-size:12px;color:var(--warn)">${skipped} file${skipped!==1?'s':''} could not be matched and were skipped.</div>` : ''}
+    <div style="font-size:12px;color:var(--text2);margin-top:6px">Click <strong>Publish</strong> to upload everything to GitHub.</div>`;
+  document.getElementById('bulkFooter').innerHTML = '<button class="btn btn-primary" onclick="closeBulk()">Done</button>';
+  document.getElementById('bulkFooter').style.display = '';
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise((res,rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = () => rej(new Error('Read failed'));
+    r.readAsDataURL(file);
+  });
+}
+
+// ── Publish ──
+function openPublish() {
+  if (!isGhOk()) { openGhSettings(); return; }
+  const s = loadGh();
+  const qc = Object.keys(pendingPdfs).length;
+  document.getElementById('pubBody').innerHTML = `
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Pushing to:</p>
+    <div style="background:var(--bg);border-radius:7px;padding:10px 14px;font-family:monospace;font-size:13px;margin-bottom:14px">github.com/${s.user}/${s.repo}</div>
+    <p style="font-size:13px;color:var(--text2)">📄 <strong>${papers.length}</strong> papers (metadata)<br>${qc>0?`📎 <strong>${qc}</strong> PDF${qc!==1?'s':''} to upload`:'📎 No new PDFs'}</p>
+    <div class="mfooter"><button class="btn" onclick="closePublish()">Cancel</button><button class="btn btn-blue" onclick="doPublish()">Publish now</button></div>`;
+  document.getElementById('pubClose').style.display = '';
+  document.getElementById('publishModal').classList.add('open');
+}
+function closePublish() { document.getElementById('publishModal').classList.remove('open'); }
+
+async function doPublish() {
+  const s = loadGh();
+  const headers = { 'Authorization':`token ${s.token}`, 'Content-Type':'application/json' };
+  const base = `https://api.github.com/repos/${s.user}/${s.repo}/contents`;
+  const pdfEntries = Object.entries(pendingPdfs);
+
+  document.getElementById('pubClose').style.display = 'none';
+  const setStatus = (big, msg, sub) => {
+    document.getElementById('pubBody').innerHTML = `
+      <div class="pub-status">
+        <div class="pub-big">${big}</div>
+        <div class="pub-msg">${msg}</div>
+        ${sub?`<div style="font-size:11px;color:var(--text3);margin-top:6px">${sub}</div>`:''}
+        <div class="prog-wrap" style="max-width:300px;margin:12px auto 0"><div class="prog-fill" id="pubProg" style="width:0%"></div></div>
+      </div>`;
+  };
+
+  try {
+    setStatus('⏳', 'Publishing metadata…');
+    document.getElementById('pubProg').style.width = '5%';
+
+    // Build and push index.html
+    const html = buildHtml();
+    const htmlB64 = btoa(unescape(encodeURIComponent(html)));
+    let sha = null;
+    try { const r = await fetch(`${base}/index.html`,{headers}); if(r.ok){const j=await r.json();sha=j.sha;} } catch(e){}
+    const res = await fetch(`${base}/index.html`,{method:'PUT',headers,body:JSON.stringify({
+      message:`Update repository — ${papers.length} papers — ${new Date().toISOString().substring(0,10)}`,
+      content: htmlB64, ...(sha?{sha}:{})
+    })});
+    if (!res.ok) { const e=await res.json(); throw new Error(e.message); }
+    document.getElementById('pubProg').style.width = '25%';
+
+    // Upload PDFs one by one
+    for (let i=0; i<pdfEntries.length; i++) {
+      const [pmid, pdf] = pdfEntries[i];
+      const pct = 25 + Math.round(((i+1)/pdfEntries.length)*70);
+      setStatus('⏳', `Uploading PDFs… ${i+1} / ${pdfEntries.length}`, pmid+'.pdf');
+      document.getElementById('pubProg').style.width = pct+'%';
+      const b64 = pdf.dataUrl.split(',')[1];
+      let pdfSha = null;
+      try { const r=await fetch(`${base}/pdfs/${pmid}.pdf`,{headers}); if(r.ok){const j=await r.json();pdfSha=j.sha;} } catch(e){}
+      const pr = await fetch(`${base}/pdfs/${pmid}.pdf`,{method:'PUT',headers,body:JSON.stringify({
+        message:`Add PDF ${pmid}`, content:b64, ...(pdfSha?{sha:pdfSha}:{})
+      })});
+      if (pr.ok) { delete pendingPdfs[pmid]; savePdfQ(); }
+    }
+
+    document.getElementById('pubProg').style.width = '100%';
+    const siteUrl = `https://${s.user}.github.io/${s.repo}`;
+    const remaining = Object.keys(pendingPdfs).length;
+    document.getElementById('pubBody').innerHTML = `
+      <div class="pub-status">
+        <div class="pub-big">✅</div>
+        <div class="pub-msg">Published!</div>
+        <a href="${siteUrl}" target="_blank" style="color:var(--accent);font-size:13px;display:block;margin-top:6px">${siteUrl} ↗</a>
+        ${remaining?`<div style="font-size:12px;color:var(--danger);margin-top:6px">${remaining} PDF${remaining!==1?'s':''} failed — try publishing again.</div>`:''}
+        <div style="font-size:11px;color:var(--text3);margin-top:6px">Updates live within 1–2 minutes.</div>
+      </div>
+      <div class="mfooter"><button class="btn btn-primary" onclick="closePublish()">Done</button></div>`;
+    document.getElementById('pubClose').style.display = '';
+    render(); updateStats();
+  } catch(err) {
+    document.getElementById('pubBody').innerHTML = `
+      <div class="pub-status"><div class="pub-big">❌</div><div class="pub-msg" style="color:var(--danger)">${err.message}</div></div>
+      <div class="mfooter"><button class="btn" onclick="openPublish()">Back</button></div>`;
+    document.getElementById('pubClose').style.display = '';
+  }
+}
+
+function buildHtml() {
+  const src = document.documentElement.outerHTML;
+  const script = `<script>try{localStorage.setItem('${STORE}',${JSON.stringify(JSON.stringify(papers))});localStorage.removeItem('${PDF_Q}');}catch(e){}<\/script>`;
+  return src.replace(/<\/body>/, script+'</body>');
+}
+
+load();
+</script>
+</body>
+</html>
